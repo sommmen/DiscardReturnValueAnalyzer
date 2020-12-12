@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscardReturnValueAnalyzer", "DiscardReturnValueAnalyzer\DiscardReturnValueAnalyzer.csproj", "{E57BE7DE-2FF4-499B-B693-074FD4158CDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscardReturnValueAnalyzer.CodeFixes", "DiscardReturnValueAnalyzer.CodeFixes\DiscardReturnValueAnalyzer.CodeFixes.csproj", "{CCFC087E-E694-47D2-A086-28215837101F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscardReturnValueAnalyzer.Package", "DiscardReturnValueAnalyzer.Package\DiscardReturnValueAnalyzer.Package.csproj", "{19FA6248-4D2B-4A19-A83E-3228C87E6774}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscardReturnValueAnalyzer.Test", "DiscardReturnValueAnalyzer.Test\DiscardReturnValueAnalyzer.Test.csproj", "{53E85982-ACF4-4BD8-8921-24D90B605DB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscardReturnValueAnalyzer.Vsix", "DiscardReturnValueAnalyzer.Vsix\DiscardReturnValueAnalyzer.Vsix.csproj", "{74BDE938-1F9D-4E03-B2F4-50C92B7C4723}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{55260AA7-47F2-42F0-A6EE-4B06363BE25A}"
+	ProjectSection(SolutionItems) = preProject
+		nuget.config = nuget.config
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E57BE7DE-2FF4-499B-B693-074FD4158CDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E57BE7DE-2FF4-499B-B693-074FD4158CDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E57BE7DE-2FF4-499B-B693-074FD4158CDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E57BE7DE-2FF4-499B-B693-074FD4158CDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCFC087E-E694-47D2-A086-28215837101F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCFC087E-E694-47D2-A086-28215837101F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCFC087E-E694-47D2-A086-28215837101F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCFC087E-E694-47D2-A086-28215837101F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19FA6248-4D2B-4A19-A83E-3228C87E6774}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19FA6248-4D2B-4A19-A83E-3228C87E6774}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19FA6248-4D2B-4A19-A83E-3228C87E6774}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19FA6248-4D2B-4A19-A83E-3228C87E6774}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53E85982-ACF4-4BD8-8921-24D90B605DB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53E85982-ACF4-4BD8-8921-24D90B605DB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53E85982-ACF4-4BD8-8921-24D90B605DB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53E85982-ACF4-4BD8-8921-24D90B605DB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74BDE938-1F9D-4E03-B2F4-50C92B7C4723}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74BDE938-1F9D-4E03-B2F4-50C92B7C4723}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74BDE938-1F9D-4E03-B2F4-50C92B7C4723}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74BDE938-1F9D-4E03-B2F4-50C92B7C4723}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F97D49DA-284C-47C3-9708-15625017E5FB}
+	EndGlobalSection
+EndGlobal
