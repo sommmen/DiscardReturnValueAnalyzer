@@ -1,7 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
-using System.Linq;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DiscardReturnValueAnalyzer
 {
@@ -26,24 +27,51 @@ namespace DiscardReturnValueAnalyzer
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
 
-            // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
-            // See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
-            context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.NamedType);
+            context.RegisterSyntaxNodeAction(AnalyzeInvocationExpression, SyntaxKind.InvocationExpression);
         }
 
-        private static void AnalyzeSymbol(SymbolAnalysisContext context)
+        private void AnalyzeInvocationExpression(SyntaxNodeAnalysisContext context)
         {
-            // TODO: Replace the following code with your own analysis, generating Diagnostic objects for any issues you find
-            var namedTypeSymbol = (INamedTypeSymbol)context.Symbol;
+            var invocation = (InvocationExpressionSyntax) context.Node;
+            
 
-            // Find just those named type symbols with names containing lowercase letters.
-            if (namedTypeSymbol.Name.ToCharArray().Any(char.IsLower))
+            // Get the method declaration so we can find out if it has a return value
+            //
+
+            var methodSymbol = context
+                .SemanticModel
+                .GetSymbolInfo(invocation, context.CancellationToken)
+                .Symbol as IMethodSymbol;
+
+
+            if(methodSymbol == null)
+                return; // TODO This can be null as well, e.g. when you were calling a method from another assembly, so test for that.
+
+            if(methodSymbol.ReturnsVoid)
+                return;
+            
+            var parent = invocation.Parent;
+
+            if(parent == null)
+                return; // TODO apparently this can be null, but under what circumstances?
+
+            if (parent is ExpressionStatementSyntax parentExpressionStatementSyntax)
             {
-                // For all such symbols, produce a diagnostic.
-                var diagnostic = Diagnostic.Create(Rule, namedTypeSymbol.Locations[0], namedTypeSymbol.Name);
-
-                context.ReportDiagnostic(diagnostic);
+                // If the parent is directly being called this means the method is called and the variable is discarded
+                context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), invocation));
             }
+            
+            //var syntaxReference = methodSymbol
+            //    .DeclaringSyntaxReferences
+            //    .FirstOrDefault();
+
+            //if(syntaxReference == null)
+            //    return; // TODO This can be null as well, e.g. when you were calling a method from another assembly, so test for that.
+
+            //var declaration = syntaxReference.GetSyntax(context.CancellationToken);
+            // var semanticModel = context.Compilation.GetSemanticModel(declaration.SyntaxTree);
+
         }
+
     }
 }
