@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 using VerifyCS = DiscardReturnValueAnalyzer.Test.CSharpCodeFixVerifier<
-    DiscardReturnValueAnalyzer.DiscardReturnValueAnalyzerAnalyzer,
+    DiscardReturnValueAnalyzer.DiscardReturnValueAnalyzer,
     DiscardReturnValueAnalyzer.DiscardReturnValueAnalyzerCodeFixProvider>;
 
 namespace DiscardReturnValueAnalyzer.Test

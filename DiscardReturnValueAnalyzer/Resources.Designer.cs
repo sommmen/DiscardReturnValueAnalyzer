@@ -61,7 +61,7 @@ namespace DiscardReturnValueAnalyzer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Non-void returning methods should be explicitly discarded.
+        ///   Looks up a localized string similar to Non-void returning methods should be explicitly discarded..
         /// </summary>
         internal static string AnalyzerDescription {
             get {

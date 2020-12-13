@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace DiscardReturnValueAnalyzer
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class DiscardReturnValueAnalyzerAnalyzer : DiagnosticAnalyzer
+    public class DiscardReturnValueAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "DiscardReturnValueAnalyzer";
 
@@ -33,11 +33,8 @@ namespace DiscardReturnValueAnalyzer
         private void AnalyzeInvocationExpression(SyntaxNodeAnalysisContext context)
         {
             var invocation = (InvocationExpressionSyntax) context.Node;
-            
 
             // Get the method declaration so we can find out if it has a return value
-            //
-
             var methodSymbol = context
                 .SemanticModel
                 .GetSymbolInfo(invocation, context.CancellationToken)
@@ -55,22 +52,11 @@ namespace DiscardReturnValueAnalyzer
             if(parent == null)
                 return; // TODO apparently this can be null, but under what circumstances?
 
-            if (parent is ExpressionStatementSyntax parentExpressionStatementSyntax)
+            if (parent is ExpressionStatementSyntax)
             {
-                // If the parent is directly being called this means the method is called and the variable is discarded
                 context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetLocation(), invocation));
             }
             
-            //var syntaxReference = methodSymbol
-            //    .DeclaringSyntaxReferences
-            //    .FirstOrDefault();
-
-            //if(syntaxReference == null)
-            //    return; // TODO This can be null as well, e.g. when you were calling a method from another assembly, so test for that.
-
-            //var declaration = syntaxReference.GetSyntax(context.CancellationToken);
-            // var semanticModel = context.Compilation.GetSemanticModel(declaration.SyntaxTree);
-
         }
 
     }

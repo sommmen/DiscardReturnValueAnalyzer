@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Rename;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -15,10 +14,7 @@ namespace DiscardReturnValueAnalyzer
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DiscardReturnValueAnalyzerCodeFixProvider)), Shared]
     public class DiscardReturnValueAnalyzerCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> FixableDiagnosticIds
-        {
-            get { return ImmutableArray.Create(DiscardReturnValueAnalyzerAnalyzer.DiagnosticId); }
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiscardReturnValueAnalyzer.DiagnosticId);
 
         public sealed override FixAllProvider GetFixAllProvider()
         {
@@ -35,34 +31,43 @@ namespace DiscardReturnValueAnalyzer
             var diagnosticSpan = diagnostic.Location.SourceSpan;
 
             // Find the type declaration identified by the diagnostic.
-            var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<TypeDeclarationSyntax>().First();
+            var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
 
             // Register a code action that will invoke the fix.
             context.RegisterCodeFix(
                 CodeAction.Create(
                     title: CodeFixResources.CodeFixTitle,
-                    createChangedSolution: c => MakeUppercaseAsync(context.Document, declaration, c),
+                    createChangedDocument: c => AssignDiscardAsync(context.Document, declaration, c),
                     equivalenceKey: nameof(CodeFixResources.CodeFixTitle)),
                 diagnostic);
         }
 
-        private async Task<Solution> MakeUppercaseAsync(Document document, TypeDeclarationSyntax typeDecl, CancellationToken cancellationToken)
+        private async Task<Document> AssignDiscardAsync(Document document, InvocationExpressionSyntax declaration, CancellationToken cancellationToken)
         {
-            // Compute new uppercase name.
-            var identifierToken = typeDecl.Identifier;
-            var newName = identifierToken.Text.ToUpperInvariant();
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
 
-            // Get the symbol representing the type to be renamed.
-            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-            var typeSymbol = semanticModel.GetDeclaredSymbol(typeDecl, cancellationToken);
+            var parentExpressionStatement = (ExpressionStatementSyntax) declaration.Parent;
 
-            // Produce a new solution that has all references to that type renamed, including the declaration.
-            var originalSolution = document.Project.Solution;
-            var optionSet = originalSolution.Workspace.Options;
-            var newSolution = await Renamer.RenameSymbolAsync(document.Project.Solution, typeSymbol, newName, optionSet, cancellationToken).ConfigureAwait(false);
+            // Fix trivia
+            var firstToken = declaration.GetFirstToken();
+            var leadingTrivia = declaration.GetLeadingTrivia();
+            var trailingTrivia = parentExpressionStatement.GetTrailingTrivia();
+            var declarationTrimmed = declaration.ReplaceToken(firstToken, firstToken.WithLeadingTrivia(SyntaxTriviaList.Empty));
 
-            // Return the new solution with the now-uppercase type name.
-            return newSolution;
+            // NOTE Roslyn is based on immutable structures
+            // NOTE See: https://roslynquoter.azurewebsites.net/ to easily get the syntax tree for a piece of code.
+
+            var discardOperatorIdentifierName = SyntaxFactory.IdentifierName("_");
+            var discardOperatorIdentifierNameTrailed = discardOperatorIdentifierName.WithLeadingTrivia(leadingTrivia);
+            var assignmentExpressionSyntax = SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, discardOperatorIdentifierNameTrailed, declarationTrimmed);
+            var expressionStatementSyntax = SyntaxFactory.ExpressionStatement(assignmentExpressionSyntax);
+            var expressionStatementSyntaxToken = expressionStatementSyntax.GetLastToken();
+            var expressionStatementSyntaxTrivia = expressionStatementSyntax.ReplaceToken(expressionStatementSyntaxToken, expressionStatementSyntaxToken.WithTrailingTrivia(trailingTrivia));
+
+            var newNode = root.ReplaceNode(parentExpressionStatement, expressionStatementSyntaxTrivia);
+            var newDocument = document.WithSyntaxRoot(newNode);
+
+            return newDocument;
         }
     }
 }
